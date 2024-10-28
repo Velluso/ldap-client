@@ -2,9 +2,11 @@ import * as ldap from 'ldapjs';
 
 /**
  * @typedef {Object} LdapConfig
- * @property {string} url - The URL of the LDAP server.
- * @property {string} userBase - The base DN for user searches.
- * @property {string} authorizedGroups - A comma-separated list of authorized groups.
+ * @property {string} url - The URL of the LDAP server (e.g., `ldap://127.0.0.1:1389`).
+ * @property {string} userBase - The Domain Components (DC) for user searches (e.g., `dc=example,dc=com`).
+ *                                  This is the starting point in the LDAP directory from which user searches will be conducted.
+ * @property {string} authorizedGroups - A comma-separated list of groups that are authorized to access the system (e.g., `admins,developers`).
+ *                                       Users must belong to one of these groups to be considered authorized.
  */
 interface LdapConfig {
     url: string;
@@ -14,6 +16,7 @@ interface LdapConfig {
 
 /**
  * Class representing a client for interacting with an LDAP server.
+ * This class provides methods to connect to the LDAP server, bind users, retrieve user information, and check authorization.
  */
 class LdapClient {
     private config: LdapConfig;
@@ -22,6 +25,10 @@ class LdapClient {
     /**
      * Creates an instance of the LDAP client.
      * @param {LdapConfig} config - Configuration for the LDAP client.
+     *                               Users can specify the following:
+     *                               - `url`: The LDAP server URL.
+     *                               - `userBase`: The base Domain Components (DC) for user searches.
+     *                               - `authorizedGroups`: A list of groups that are allowed access.
      */
     constructor(config: LdapConfig) {
         this.config = config;
@@ -50,7 +57,7 @@ class LdapClient {
 
     /**
      * Binds the user to the LDAP server with provided credentials.
-     * @param {string} username - The username to bind.
+     * @param {string} username - The username to bind, which can be in the format `domain\username` or just `username`.
      * @param {string} password - The user's password.
      * @returns {Promise<void>} - A promise that resolves when the user is successfully bound.
      * @throws {Error} - If authentication fails or client is not initialized.
@@ -66,7 +73,6 @@ class LdapClient {
                     console.error('Authentication failed:', err);
                     return reject(err);
                 }
-                console.log(`User ${username} authenticated successfully!`);
                 resolve();
             });
         });
@@ -74,13 +80,13 @@ class LdapClient {
 
     /**
      * Retrieves the groups for a specified user.
-     * @param {string} username - The username to search for groups.
+     * @param {string} username - The username to search for groups, which can be in the format `domain\username` or just `username`.
      * @returns {Promise<string[]>} - An array of groups the user belongs to.
      * @throws {Error} - If the client is not initialized or search fails.
      */
     public async getUserGroups(username: string): Promise<string[]> {
         return new Promise((resolve, reject) => {
-            const userNameWithoutDomain = username.split('\\')[1];
+            const userNameWithoutDomain = username.split('\\')[1] || username;
             const searchOptions: ldap.SearchOptions = {
                 filter: `(&(objectClass=user)(sAMAccountName=${userNameWithoutDomain}))`,
                 scope: 'sub',
@@ -119,13 +125,13 @@ class LdapClient {
 
     /**
      * Retrieves the full name of the user.
-     * @param {string} username - The username to search for full name.
+     * @param {string} username - The username to search for full name, which can be in the format `domain\username` or just `username`.
      * @returns {Promise<string | null>} - The full name of the user or null if not found.
      * @throws {Error} - If the client is not initialized or search fails.
      */
     public async getUserFullName(username: string): Promise<string | null> {
         return new Promise((resolve, reject) => {
-            const userNameWithoutDomain = username.split('\\')[1];
+            const userNameWithoutDomain = username.split('\\')[1] || username;
             const searchOptions: ldap.SearchOptions = {
                 filter: `(&(objectClass=user)(sAMAccountName=${userNameWithoutDomain}))`,
                 scope: 'sub',
@@ -158,13 +164,13 @@ class LdapClient {
 
     /**
      * Retrieves the email address of the user.
-     * @param {string} username - The username to search for email.
+     * @param {string} username - The username to search for email, which can be in the format `domain\username` or just `username`.
      * @returns {Promise<string | null>} - The email address of the user or null if not found.
      * @throws {Error} - If the client is not initialized or search fails.
      */
     public async getUserEmail(username: string): Promise<string | null> {
         return new Promise((resolve, reject) => {
-            const userNameWithoutDomain = username.split('\\')[1];
+            const userNameWithoutDomain = username.split('\\')[1] || username;
             const searchOptions: ldap.SearchOptions = {
                 filter: `(&(objectClass=user)(sAMAccountName=${userNameWithoutDomain}))`,
                 scope: 'sub',
@@ -218,7 +224,6 @@ class LdapClient {
                         console.error('Error during unbind:', err);
                         return reject(err);
                     }
-                    console.log('Disconnected from LDAP server');
                     resolve(true);
                 });
             } else {

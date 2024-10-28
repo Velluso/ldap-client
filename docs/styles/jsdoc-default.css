@@ -24,49 +24,55 @@
         url('../fonts/OpenSans-Light-webfont.svg#open_sanslight') format('svg');
 }
 
-html
-{
+html {
     overflow: auto;
-    background-color: #fff;
-    font-size: 14px;
+    background-color: #f5f7fa;
+    font-size: 16px; /* Aumentato per una leggibilità migliore */
 }
 
-body
-{
+body {
     font-family: 'Open Sans', sans-serif;
-    line-height: 1.5;
-    color: #4d4e53;
+    line-height: 1.6;
+    color: #333; /* Colore del testo più scuro per una migliore leggibilità */
     background-color: white;
+    margin: 0; /* Rimosso margine per un layout più pulito */
+    padding: 20px; /* Aggiunto padding per spazio */
 }
 
 a, a:visited, a:active {
-    color: #0095dd;
+    color: #007bff; /* Colore del link più moderno */
     text-decoration: none;
+    transition: color 0.3s ease; /* Transizione per il colore */
 }
 
 a:hover {
     text-decoration: underline;
+    color: #0056b3; /* Colore al passaggio del mouse più scuro */
 }
 
-header
-{
+header {
     display: block;
-    padding: 0px 4px;
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #6c63ff, #a8a8ff); /* Gradient per il header */
+    color: white; /* Colore del testo del header */
+    border-radius: 5px; /* Angoli arrotondati */
 }
 
 tt, code, kbd, samp {
     font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    background-color: #f8f9fa; /* Sfondo leggero per il codice */
+    border: 1px solid #ddd; /* Bordo per il codice */
+    border-radius: 3px; /* Angoli arrotondati */
+    padding: 3px 6px; /* Padding per il codice */
 }
 
 .class-description {
-    font-size: 130%;
-    line-height: 140%;
-    margin-bottom: 1em;
-    margin-top: 1em;
-}
-
-.class-description:empty {
-    margin: 0;
+    font-size: 1.1em; /* Maggiore dimensione del font */
+    line-height: 1.6; /* Maggiore spaziatura tra le righe */
+    margin: 1em 0; /* Margini uniformi */
+    padding: 10px; /* Aggiunto padding */
+    background: #e9ecef; /* Sfondo leggero */
+    border-left: 5px solid #007bff; /* Bordo laterale per un effetto di stile */
 }
 
 #main {
@@ -79,15 +85,17 @@ article dl {
 }
 
 article img {
-  max-width: 100%;
+    max-width: 100%;
+    border-radius: 8px; /* Angoli arrotondati per le immagini */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombra leggera */
 }
 
-section
-{
+section {
     display: block;
     background-color: #fff;
-    padding: 12px 24px;
-    border-bottom: 1px solid #ccc;
+    padding: 16px 24px;
+    border-radius: 8px; /* Angoli arrotondati */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Ombra per il contenuto */
     margin-right: 30px;
 }
 
@@ -102,8 +110,7 @@ section
     font-weight: lighter;
 }
 
-nav
-{
+nav {
     display: block;
     float: right;
     margin-top: 28px;
@@ -114,9 +121,9 @@ nav
 }
 
 nav ul {
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', arial, sans-serif;
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, sans-serif;
     font-size: 100%;
-    line-height: 17px;
+    line-height: 1.5; /* Maggiore spaziatura */
     padding: 0;
     margin: 0;
     list-style-type: none;
@@ -126,10 +133,16 @@ nav ul a, nav ul a:visited, nav ul a:active {
     font-family: Consolas, Monaco, 'Andale Mono', monospace;
     line-height: 18px;
     color: #4D4E53;
+    transition: color 0.3s ease; /* Transizione per il colore */
+}
+
+nav ul a:hover {
+    color: #007bff; /* Colore al passaggio del mouse */
 }
 
 nav h3 {
     margin-top: 12px;
+    font-size: 1.2em; /* Dimensione del font aumentata */
 }
 
 nav li {
@@ -138,106 +151,109 @@ nav li {
 
 footer {
     display: block;
-    padding: 6px;
+    padding: 10px 20px;
     margin-top: 12px;
     font-style: italic;
     font-size: 90%;
+    text-align: center; /* Centrare il testo nel footer */
+    background: #f1f1f1; /* Sfondo leggero per il footer */
+    border-radius: 5px; /* Angoli arrotondati */
 }
 
 h1, h2, h3, h4 {
-    font-weight: 200;
+    font-weight: 300; /* Maggiore leggerezza per i titoli */
     margin: 0;
 }
 
-h1
-{
+h1 {
     font-family: 'Open Sans Light', sans-serif;
     font-size: 48px;
     letter-spacing: -2px;
     margin: 12px 24px 20px;
+    color: #333; /* Colore del titolo */
 }
 
-h2, h3.subsection-title
-{
+h2, h3.subsection-title {
     font-size: 30px;
     font-weight: 700;
     letter-spacing: -1px;
     margin-bottom: 12px;
+    color: #007bff; /* Colore moderno per i sottotitoli */
 }
 
-h3
-{
+h3 {
     font-size: 24px;
     letter-spacing: -0.5px;
     margin-bottom: 12px;
+    color: #555; /* Colore grigio scuro */
 }
 
-h4
-{
+h4 {
     font-size: 18px;
     letter-spacing: -0.33px;
     margin-bottom: 12px;
-    color: #4d4e53;
+    color: #666; /* Colore grigio medio */
 }
 
-h5, .container-overview .subsection-title
-{
+h5, .container-overview .subsection-title {
     font-size: 120%;
     font-weight: bold;
     letter-spacing: -0.01em;
     margin: 8px 0 3px 0;
 }
 
-h6
-{
+h6 {
     font-size: 100%;
     letter-spacing: -0.01em;
     margin: 6px 0 3px 0;
     font-style: italic;
 }
 
-table
-{
+table {
     border-spacing: 0;
     border: 0;
     border-collapse: collapse;
+    width: 100%; /* Tabella a larghezza piena */
 }
 
-td, th
-{
+td, th {
     border: 1px solid #ddd;
-    margin: 0px;
+    margin: 0;
     text-align: left;
     vertical-align: top;
-    padding: 4px 6px;
-    display: table-cell;
+    padding: 8px; /* Maggiore padding per le celle */
 }
 
-thead tr
-{
-    background-color: #ddd;
+thead tr {
+    background-color: #007bff; /* Colore di sfondo per l'intestazione della tabella */
+    color: white; /* Colore del testo nell'intestazione */
     font-weight: bold;
 }
 
-th { border-right: 1px solid #aaa; }
-tr > th:last-child { border-right: 1px solid #ddd; }
+th {
+    border-right: 1px solid #aaa;
+}
 
-.ancestors, .attribs { color: #999; }
-.ancestors a, .attribs a
-{
+tr > th:last-child {
+    border-right: 1px solid #ddd;
+}
+
+.ancestors, .attribs {
+    color: #999;
+}
+
+.ancestors a, .attribs a {
     color: #999 !important;
     text-decoration: none;
 }
 
-.clear
-{
+.clear {
     clear: both;
 }
 
-.important
-{
+.important {
     font-weight: bold;
-    color: #950B02;
+    color: #950B02; /* Colore rosso per elementi importanti */
 }
 
 .yes-def {
@@ -245,36 +261,63 @@ tr > th:last-child { border-right: 1px solid #ddd; }
 }
 
 .type-signature {
-    color: #aaa;
+        color: #ff8800;
+        font-weight: bold;
+        font-style: italic;
 }
+
 
 .name, .signature {
     font-family: Consolas, Monaco, 'Andale Mono', monospace;
 }
 
-.details { margin-top: 14px; border-left: 2px solid #DDD; }
-.details dt { width: 120px; float: left; padding-left: 10px;  padding-top: 6px; }
-.details dd { margin-left: 70px; }
-.details ul { margin: 0; }
-.details ul { list-style-type: none; }
-.details li { margin-left: 30px; padding-top: 6px; }
-.details pre.prettyprint { margin: 0 }
-.details .object-value { padding-top: 0; }
+
+.details {
+    margin-top: 14px;
+    border-left: 2px solid #007bff; /* Colore blu per il bordo delle dettagli */
+}
+
+.details dt {
+    width: 120px;
+    float: left;
+    padding-left: 10px;
+    padding-top: 6px;
+}
+
+.details dd {
+    margin-left: 70px;
+}
+
+.details ul {
+    margin: 0;
+    list-style-type: none;
+}
+
+.details li {
+    margin-left: 30px;
+    padding-top: 6px;
+}
+
+.details pre.prettyprint {
+    margin: 0;
+}
+
+.details .object-value {
+    padding-top: 0;
+}
 
 .description {
     margin-bottom: 1em;
     margin-top: 1em;
 }
 
-.code-caption
-{
+.code-caption {
     font-style: italic;
     font-size: 107%;
     margin: 0;
 }
 
-.source
-{
+.source {
     border: 1px solid #ddd;
     width: 80%;
     overflow: auto;
@@ -284,75 +327,66 @@ tr > th:last-child { border-right: 1px solid #ddd; }
     width: inherit;
 }
 
-.source code
-{
+.source code {
     font-size: 100%;
-    line-height: 18px;
+    line-height: 1.5; /* Maggiore spaziatura per il codice */
     display: block;
     padding: 4px 12px;
     margin: 0;
-    background-color: #fff;
+    background-color: #f8f9fa; /* Sfondo chiaro per il codice */
     color: #4D4E53;
 }
 
-.prettyprint code span.line
-{
-  display: inline-block;
+.prettyprint code span.line {
+    display: inline-block;
 }
 
-.prettyprint.linenums
-{
-  padding-left: 70px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.prettyprint.linenums {
+    padding-left: 70px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.prettyprint.linenums ol
-{
-  padding-left: 0;
+.prettyprint.linenums ol {
+    padding-left: 0;
 }
 
-.prettyprint.linenums li
-{
-  border-left: 3px #ddd solid;
+.prettyprint.linenums li {
+    border-left: 3px #ddd solid;
 }
 
 .prettyprint.linenums li.selected,
-.prettyprint.linenums li.selected *
-{
-  background-color: lightyellow;
+.prettyprint.linenums li.selected * {
+    background-color: lightyellow;
 }
 
-.prettyprint.linenums li *
-{
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+.prettyprint.linenums li * {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .params .name, .props .name, .name code {
-    color: #4D4E53;
+    color: #007bff; /* Colore moderno per nomi e proprietà */
     font-family: Consolas, Monaco, 'Andale Mono', monospace;
     font-size: 100%;
 }
 
 .params td.description > p:first-child,
-.props td.description > p:first-child
-{
+.props td.description > p:first-child {
     margin-top: 0;
     padding-top: 0;
 }
 
 .params td.description > p:last-child,
-.props td.description > p:last-child
-{
+.props td.description > p:last-child {
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
 .disabled {
-    color: #454545;
+    color: #b0b0b0; /* Colore grigio chiaro per elementi disabilitati */
 }

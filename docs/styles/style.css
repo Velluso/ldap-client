@@ -1,0 +1,127 @@
+/* General styles for a clean and modern layout */
+body {
+    font-family: 'Arial', sans-serif; /* Clear and readable font */
+    background-color: #f9f9f9; /* Soft background color for less strain on eyes */
+    color: #333; /* Standard dark text color for contrast */
+    line-height: 1.6; /* Increase line height for readability */
+    margin: 0; /* Remove default margin */
+    padding: 20px; /* Add padding around the body */
+}
+
+/* Main title styling */
+h1.page-title {
+    color: #2196F3; /* Bright blue for the main title */
+    margin-top: 20px; /* Space above the title */
+    font-size: 3.5em; /* Larger font size for emphasis */
+    font-weight: 600; /* Semi-bold for stronger impact */
+    text-align: center; /* Center the title */
+    border-bottom: 3px solid #2196F3; /* Underline with color */
+    padding-bottom: 15px; /* Padding below the title */
+}
+
+/* Subtitles styling */
+h2 {
+    color: #C62828; /* Deep red for subtitles */
+    font-size: 2.5em; /* Increased font size */
+    margin-top: 40px; /* Space above subtitles */
+    border-bottom: 2px solid #C62828; /* Underline with color */
+    padding-bottom: 8px; /* Padding below the subtitle */
+    text-align: center; /* Left align the subtitle */
+}
+
+h4 {
+    color: #dfa402; /* Deep red for subtitles */
+    font-size: 1.5em; /* Increased font size */
+    margin-top: 40px; /* Space above subtitles */
+    border-bottom: 2px solid #C62828; /* Underline with color */
+    padding-bottom: 8px; /* Padding below the subtitle */
+    text-align: left; /* Left align the subtitle */
+}
+
+/* Introductory text styling */
+.intro {
+    font-style: italic; /* Italic style for introduction */
+    color: #555; /* Dark gray for intro text */
+    margin-bottom: 30px; /* Space below intro */
+    font-size: 1.2em; /* Slightly larger font size for emphasis */
+    text-align: center; /* Center the intro text */
+}
+
+/* List styling */
+ul {
+    padding-left: 20px; /* Padding for bullet list */
+    margin: 25px 0; /* Margin for list */
+    background-color: #ffffff; /* White background for list items */
+    border-radius: 5px; /* Rounded corners for lists */
+    padding: 15px; /* Padding for list */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* List item styling */
+ul li {
+    margin-bottom: 12px; /* More space between list items */
+    position: relative; /* For pseudo-elements */
+    padding-left: 10px; /* Space for bullet point */
+    line-height: 1.5; /* Increase line height for list items */
+}
+
+/* Custom bullet styling */
+ul li::marker {
+    color: #2196F3; /* Change bullet color to match theme */
+    font-weight: bold; /* Bold bullets for visibility */
+}
+
+/* Code block styling */
+pre {
+    background-color: #282C34; /* Dark background for code blocks */
+    border: 1px solid #ddd; /* Light border for code block */
+    border-radius: 4px; /* Rounded corners */
+    padding: 20px; /* Increased padding */
+    overflow-x: auto; /* Horizontal scrolling for long lines */
+    font-family: 'Courier New', monospace; /* Monospace font for code */
+    font-size: 1em; /* Consistent font size */
+    color: #ffffff; /* White text color for contrast */
+}
+
+/* Link colors and hover effects */
+nav a {
+    color: #1976D2; /* Bright blue for links in navigation */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease, font-weight 0.3s ease; /* Smooth transition for hover effect */
+    font-weight: 500; /* Medium weight links */
+}
+
+nav a:hover {
+    color: #1A237E; /* Darker blue on hover */
+    text-decoration: underline; /* Underline on hover for emphasis */
+}
+
+/* Footer styling */
+footer {
+    text-align: center; /* Center footer text */
+    margin-top: 50px; /* Space above footer */
+    font-size: 0.9em; /* Slightly larger font size */
+    color: #777; /* Gray for footer */
+    padding: 20px 0; /* Padding above and below footer */
+    border-top: 2px solid #ddd; /* Top border for separation */
+    background-color: #f1f1f1; /* Light background for footer */
+}
+
+/* Additional enhancements for responsiveness */
+@media (max-width: 768px) {
+    h1.page-title {
+        font-size: 2.5em; /* Responsive font size */
+    }
+
+    h2 {
+        font-size: 2em; /* Responsive font size */
+    }
+
+    .intro {
+        font-size: 1em; /* Responsive font size */
+    }
+
+    ul {
+        padding-left: 10px; /* Adjust padding on smaller screens */
+    }
+}

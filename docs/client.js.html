@@ -54,11 +54,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ldap = __importStar(require("ldapjs"));
 /**
  * Class representing a client for interacting with an LDAP server.
+ * This class provides methods to connect to the LDAP server, bind users, retrieve user information, and check authorization.
  */
 class LdapClient {
     /**
      * Creates an instance of the LDAP client.
      * @param {LdapConfig} config - Configuration for the LDAP client.
+     *                               Users can specify the following:
+     *                               - `url`: The LDAP server URL.
+     *                               - `userBase`: The base Domain Components (DC) for user searches.
+     *                               - `authorizedGroups`: A list of groups that are allowed access.
      */
     constructor(config) {
         this.config = config;
@@ -76,177 +81,163 @@ class LdapClient {
                 return reject(new Error('Client not initialized'));
             }
             this.client.on('connect', () => resolve());
-            this.client.on('error', (err) => reject(err));
-        });
-    }
-    /**
-     * Authenticates the user.
-     * @param {string} username - The username to authenticate.
-     * @param {string} password - The user's password.
-     * @returns {Promise&lt;boolean>} - A promise that resolves to true if authentication is successful.
-     * @throws {Error} - If authentication fails or client is not initialized.
-     */
-    async authenticate(username, password) {
-        const userDN = `uid=${username},${this.config.baseDN}`;
-        return new Promise((resolve, reject) => {
-            if (!this.client) {
-                return reject(new Error('Client not initialized'));
-            }
-            this.client.bind(userDN, password, (err) => {
-                if (err)
-                    return reject(new Error('Authentication failed'));
-                resolve(true);
-            });
-        });
-    }
-    /**
-     * Authenticates the user and retrieves their groups.
-     * @param {string} username - The username to authenticate.
-     * @param {string} password - The user's password.
-     * @returns {Promise&lt;{ isAuthenticated: boolean; groups: string[] }>} - An object indicating if authentication was successful and the user's groups.
-     * @throws {Error} - If authentication fails or client is not initialized.
-     */
-    async authGroups(username, password) {
-        const userDN = `uid=${username},${this.config.baseDN}`;
-        return new Promise(async (resolve, reject) => {
-            try {
-                if (!this.client) {
-                    return reject(new Error('Client not initialized'));
-                }
-                // Perform authentication
-                await new Promise((resolveBind, rejectBind) => {
-                    this.client.bind(userDN, password, (err) => {
-                        if (err)
-                            return rejectBind(new Error('Authentication failed'));
-                        resolveBind();
-                    });
-                });
-                // Get the user's groups
-                const groups = await this.getUserGroups(username);
-                resolve({ isAuthenticated: true, groups });
-            }
-            catch (err) {
+            this.client.on('error', (err) => {
+                console.error('Error connecting to LDAP server:', err);
                 reject(err);
-            }
-        });
-    }
-    /**
-     * Executes a custom LDAP search.
-     * @param {string} filter - The LDAP search filter.
-     * @param {string[]} attributes - The attributes to retrieve in the search.
-     * @returns {Promise&lt;ldap.SearchEntry[]>} - An array of search results.
-     * @throws {Error} - If the client is not initialized or search fails.
-     */
-    async search(filter, attributes) {
-        const searchOptions = {
-            filter,
-            scope: 'sub',
-            attributes,
-        };
-        return new Promise((resolve, reject) => {
-            if (!this.client) {
-                return reject(new Error('Client not initialized'));
-            }
-            const results = [];
-            this.client.search(this.config.baseDN, searchOptions, (err, res) => {
-                if (err)
-                    return reject(new Error('LDAP search error'));
-                res.on('searchEntry', (entry) => {
-                    results.push(entry);
-                });
-                res.on('end', (result) => {
-                    if (result &amp;&amp; result.status !== 0) {
-                        return reject(new Error(`Search failed with status: ${result.status}`));
-                    }
-                    resolve(results);
-                });
-                res.on('error', (err) => reject(err));
             });
         });
     }
     /**
-     * Searches for the user's groups.
-     * @param {string} username - The username to search for groups.
+     * Binds the user to the LDAP server with provided credentials.
+     * @param {string} username - The username to bind, which can be in the format `domain\username` or just `username`.
+     * @param {string} password - The user's password.
+     * @returns {Promise&lt;void>} - A promise that resolves when the user is successfully bound.
+     * @throws {Error} - If authentication fails or client is not initialized.
+     */
+    async bind(username, password) {
+        return new Promise((resolve, reject) => {
+            if (!this.client) {
+                return reject(new Error('Client not initialized'));
+            }
+            this.client.bind(username, password, (err) => {
+                if (err) {
+                    console.error('Authentication failed:', err);
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+    }
+    /**
+     * Retrieves the groups for a specified user.
+     * @param {string} username - The username to search for groups, which can be in the format `domain\username` or just `username`.
      * @returns {Promise&lt;string[]>} - An array of groups the user belongs to.
      * @throws {Error} - If the client is not initialized or search fails.
      */
     async getUserGroups(username) {
-        const searchOptions = {
-            filter: `(uid=${username})`,
-            scope: 'sub',
-            attributes: ['memberOf']
-        };
         return new Promise((resolve, reject) => {
+            const userNameWithoutDomain = username.split('\\')[1] || username;
+            const searchOptions = {
+                filter: `(&amp;(objectClass=user)(sAMAccountName=${userNameWithoutDomain}))`,
+                scope: 'sub',
+                attributes: ['memberOf', 'distinguishedName'],
+            };
+            const groups = [];
             if (!this.client) {
                 return reject(new Error('Client not initialized'));
             }
-            const groups = [];
-            this.client.search(this.config.baseDN, searchOptions, (err, res) => {
-                if (err)
-                    return reject(new Error('Error searching groups'));
+            this.client.search(this.config.userBase, searchOptions, (err, res) => {
+                if (err) {
+                    console.error('Error searching groups:', err);
+                    return reject(err);
+                }
                 res.on('searchEntry', (entry) => {
-                    const memberOfAttr = entry.attributes.find(attr => attr.type === 'memberOf');
-                    if (memberOfAttr &amp;&amp; memberOfAttr.vals) {
-                        groups.push(...memberOfAttr.vals);
+                    const dnString = entry.objectName ? entry.objectName.toString() : null;
+                    if (dnString) {
+                        const dnParts = dnString.split(',');
+                        for (const part of dnParts) {
+                            const [key, value] = part.trim().split('=');
+                            if (key === 'OU') {
+                                groups.push(value);
+                            }
+                        }
                     }
                 });
-                res.on('end', (result) => {
-                    if (result &amp;&amp; result.status !== 0) {
-                        return reject(new Error(`Search failed with status: ${result.status}`));
-                    }
-                    resolve(groups);
-                });
+                res.on('end', () => resolve(groups));
                 res.on('error', (err) => reject(err));
             });
         });
     }
     /**
-     * Retrieves the user's domain information.
-     * @param {string} username - The username to get domain information for.
-     * @returns {Promise&lt;DomainInfo>} - An object containing the user's domain information.
+     * Retrieves the full name of the user.
+     * @param {string} username - The username to search for full name, which can be in the format `domain\username` or just `username`.
+     * @returns {Promise&lt;string | null>} - The full name of the user or null if not found.
      * @throws {Error} - If the client is not initialized or search fails.
      */
-    async getDomainInfo(username) {
-        const searchOptions = {
-            filter: `(uid=${username})`,
-            scope: 'sub',
-            attributes: ['sAMAccountName', 'mail']
-        };
+    async getUserFullName(username) {
         return new Promise((resolve, reject) => {
+            const userNameWithoutDomain = username.split('\\')[1] || username;
+            const searchOptions = {
+                filter: `(&amp;(objectClass=user)(sAMAccountName=${userNameWithoutDomain}))`,
+                scope: 'sub',
+                attributes: ['distinguishedName', 'cn'],
+            };
+            let fullName = null;
             if (!this.client) {
                 return reject(new Error('Client not initialized'));
             }
-            const domainInfo = {};
-            this.client.search(this.config.baseDN, searchOptions, (err, res) => {
-                if (err)
-                    return reject(new Error('Domain search error'));
+            this.client.search(this.config.userBase, searchOptions, (err, res) => {
+                if (err) {
+                    console.error('Error searching for full name:', err);
+                    return reject(err);
+                }
                 res.on('searchEntry', (entry) => {
-                    const usernameAttr = entry.attributes.find(attr => attr.type === 'sAMAccountName');
-                    const mailAttr = entry.attributes.find(attr => attr.type === 'mail');
-                    domainInfo.username = usernameAttr ? usernameAttr.vals[0] : undefined;
-                    domainInfo.mail = mailAttr ? mailAttr.vals[0] : undefined;
-                });
-                res.on('end', (result) => {
-                    if (result &amp;&amp; result.status !== 0) {
-                        return reject(new Error(`Search failed with status: ${result.status}`));
+                    const cnAttr = entry.attributes.find(attr => attr.type === 'cn');
+                    if (cnAttr &amp;&amp; cnAttr.values) {
+                        fullName = cnAttr.values[0].toString();
                     }
-                    resolve(domainInfo);
                 });
+                res.on('end', () => resolve(fullName));
                 res.on('error', (err) => reject(err));
             });
         });
+    }
+    /**
+     * Retrieves the email address of the user.
+     * @param {string} username - The username to search for email, which can be in the format `domain\username` or just `username`.
+     * @returns {Promise&lt;string | null>} - The email address of the user or null if not found.
+     * @throws {Error} - If the client is not initialized or search fails.
+     */
+    async getUserEmail(username) {
+        return new Promise((resolve, reject) => {
+            const userNameWithoutDomain = username.split('\\')[1] || username;
+            const searchOptions = {
+                filter: `(&amp;(objectClass=user)(sAMAccountName=${userNameWithoutDomain}))`,
+                scope: 'sub',
+                attributes: ['userPrincipalName'],
+            };
+            let email = null;
+            if (!this.client) {
+                return reject(new Error('Client not initialized'));
+            }
+            this.client.search(this.config.userBase, searchOptions, (err, res) => {
+                if (err) {
+                    console.error('Error searching for email:', err);
+                    return reject(err);
+                }
+                res.on('searchEntry', (entry) => {
+                    const userPrincipalNameAttr = entry.attributes.find(attr => attr.type === 'userPrincipalName');
+                    if (userPrincipalNameAttr &amp;&amp; userPrincipalNameAttr.values) {
+                        email = userPrincipalNameAttr.values[0].toString();
+                    }
+                });
+                res.on('end', () => resolve(email));
+                res.on('error', (err) => reject(err));
+            });
+        });
+    }
+    /**
+     * Checks if the user is authorized based on their groups.
+     * @param {string[]} groups - The groups the user belongs to.
+     * @returns {boolean} - True if the user is authorized, false otherwise.
+     */
+    isAuthorized(groups) {
+        const authorizedGroups = this.config.authorizedGroups.split(',');
+        return groups.some(group => authorizedGroups.includes(group));
     }
     /**
      * Disconnects from the LDAP server.
      * @returns {Promise&lt;boolean>} - A promise that resolves to true if the disconnection was successful.
      * @throws {Error} - If an error occurs during disconnection.
      */
-    unbind() {
+    async unbind() {
         return new Promise((resolve, reject) => {
             if (this.client) {
                 this.client.unbind((err) => {
-                    if (err)
-                        return reject(new Error('Error during disconnection'));
+                    if (err) {
+                        console.error('Error during unbind:', err);
+                        return reject(err);
+                    }
                     resolve(true);
                 });
             }
@@ -273,7 +264,7 @@ exports.default = LdapClient;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 25 2024 20:33:35 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Oct 28 2024 21:58:28 GMT+0100 (Ora standard dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>
