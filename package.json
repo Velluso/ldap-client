@@ -9,9 +9,13 @@
     "start": "node dist/client.js",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Velluso/ldap-client"
+  },
+  "keywords": ["ldap", "client"],
+  "author": "Marco Velluso",
+  "license": "MIT",
   "devDependencies": {
     "@types/ldapjs": "^3.0.6",
     "jsdoc": "^4.0.4",
