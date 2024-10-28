@@ -20,7 +20,7 @@ Example configuration:
 
 Import the LDAP client and create an instance of the `LdapClient` class with the configured settings.
 
-    const LdapClient = require('ldap-client');
+    const LdapClient = require('ldap-client-connector');
     const client = new LdapClient(config);
     await client.connect();
 
@@ -64,4 +64,4 @@ When done, disconnect from the LDAP server.
 
 ## Complete Documentation
 
-For a comprehensive list of methods and configuration options, refer to the `LdapClient` documentation.
+For a comprehensive list of methods and configuration options, refer to the `LdapClient` documentation, to see it start a live server from the index.html inside the docs/ folder.
